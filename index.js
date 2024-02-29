@@ -28,7 +28,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://master--timely-gnome-2ae3d3.netlify.app"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
