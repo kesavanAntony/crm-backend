@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://gorgeous-lolly-e7ba2a.netlify.app"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
@@ -41,16 +41,21 @@ app.use(
 );
 
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USERNAME,
-  password: process.env.PASSWORD,
-  database: process.env.DB_DBNAME,
-  port: process.env.DB_PORT,
+  // host: process.env.DB_HOST,
+  // user: process.env.DB_USERNAME,
+  // password: process.env.PASSWORD,
+  // database: process.env.DB_DBNAME,
+  // port: process.env.DB_PORT,
   // host : "db4free.net",
   // user : "kesavan",
   // password : "Kesavan@5",
   // database : "travelixapp",
   // port : 3306
+  host: "bnsuq09gy9swd2ihci9w-mysql.services.clever-cloud.com",
+  user: "ujlir5m8cuaneg3h",
+  password:"Hp8hzm7mHczEb6NZDWrR",
+  database:"bnsuq09gy9swd2ihci9w",
+  port: 3306,
 });
 
 connection.connect((error) => {
@@ -95,7 +100,17 @@ app.post("/order", async(req,res )=>{
       return res.status(500).send("error")
     }
     else{
-      res.status(200).send(order);
+      res.status(200).send(order)
+
+    }
+  }
+  catch(err){
+    console.log(err)
+    res.status(500).send("error")
+  }
+
+   
+});
   //    const data = req.body;
   //    console.log(data);
 
@@ -110,19 +125,6 @@ app.post("/order", async(req,res )=>{
 
     
   // });
-
-    }
-    
-
-  
-  }
-  catch(err){
-    console.log(err)
-    res.status(500).send("error")
-  }
-
-   
-})
 
 app.post("/order/validate",(req,res)=>{
   const {razorpay_order_id,razorpay_payment_id,razorpay_signature} = req.body;
