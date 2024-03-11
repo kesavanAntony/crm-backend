@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://precious-dusk-fe1628.netlify.app"],
+    origin: ["https://razo.co.in"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
