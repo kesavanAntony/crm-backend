@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://razo.co.in"],
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
