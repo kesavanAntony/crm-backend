@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://stellar-dango-6ad77a.netlify.app"],
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
@@ -51,13 +51,14 @@ const connection = mysql.createConnection({
   // password : "root123",
   // database : "razotransutility",
   // port : 3306
-  host: "bnsuq09gy9swd2ihci9w-mysql.services.clever-cloud.com",
-  user: "ujlir5m8cuaneg3h",
-  password:"Hp8hzm7mHczEb6NZDWrR",
-  database:"bnsuq09gy9swd2ihci9w",
-  port: 3306,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USERNAME,
+  password:process.env.PASSWORD,
+  database:process.env.DB_DBNAME,
+  port: process.env.DB_PORT,
   // url:"mysql://ujlir5m8cuaneg3h:Hp8hzm7mHczEb6NZDWrR@bnsuq09gy9swd2ihci9w-mysql.services.clever-cloud.com:3306/bnsuq09gy9swd2ihci9w"
 });
+
 
 connection.connect((error) => {
   if (error) {
