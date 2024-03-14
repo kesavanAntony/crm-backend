@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://razo.co.in"],
+    origin: ["https://main--monumental-smakager-0a48af.netlify.app"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
@@ -56,7 +56,7 @@ const connection = mysql.createConnection({
   password:process.env.PASSWORD,
   database:process.env.DB_DBNAME,
   port: process.env.DB_PORT,
-  // url:"mysql://ujlir5m8cuaneg3h:Hp8hzm7mHczEb6NZDWrR@bnsuq09gy9swd2ihci9w-mysql.services.clever-cloud.com:3306/bnsuq09gy9swd2ihci9w"
+ 
 });
 
 
