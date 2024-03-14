@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://moonlit-madeleine-c433e2.netlify.app"],
+    origin: ["https://razo.co.in"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
