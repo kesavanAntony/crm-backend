@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://magnificent-sunflower-779eb1.netlify.app"],
+    origin: ["https://razo.co.in"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
@@ -41,21 +41,21 @@ app.use(
 );
 
 const connection = mysql.createConnection({
-  // host: process.env.DB_HOST,
-  // user: process.env.DB_USERNAME,
-  // password: process.env.PASSWORD,
-  // database: process.env.DB_DBNAME,
-  // port: process.env.DB_PORT,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USERNAME,
+  password: process.env.PASSWORD,
+  database: process.env.DB_DBNAME,
+  port: process.env.DB_PORT,
   // host : "localhost",
   // user : "root",
   // password : "root123",
   // database : "razotransutility",
   // port : 3306
-  host: process.env.DB_HOST,
-  user: process.env.DB_USERNAME,
-  password:process.env.PASSWORD,
-  database:process.env.DB_DBNAME,
-  port: process.env.DB_PORT,
+  // host: process.env.DB_HOST,
+  // user: process.env.DB_USERNAME,
+  // password:process.env.PASSWORD,
+  // database:process.env.DB_DBNAME,
+  // port: process.env.DB_PORT,
  
 });
 
@@ -68,13 +68,13 @@ connection.connect((error) => {
   }
 });
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "kesavanraj0506@gmail.com",
-    pass: "bmffuhcesuumgcux",
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "kesavanraj0506@gmail.com",
+//     pass: "bmffuhcesuumgcux",
+//   },
+// });
 //  const key_id = process.env.RAZORPAY_KEY_ID;
 // const secret = process.env.RAZORPAY_SECRET
 //  console.log(key_id,secret)
@@ -91,7 +91,7 @@ app.post("/order", async(req,res )=>{
     })
    
     const options = {
-        amount:req.body.amount,
+        amount:req.body.amount *100,
         currency:req.body.currency,
         receipt:req.body.receiptID
     };
@@ -102,8 +102,9 @@ app.post("/order", async(req,res )=>{
       return res.status(500).send("error")
     }
     else{
-      res.status(200).send(order)
-
+      
+      res.status(200).send(order);
+  
     }
   }
   catch(err){
@@ -135,13 +136,17 @@ app.post("/order/validate",(req,res)=>{
   const digest = sha.digest("hex");
   if(digest !== razorpay_signature){
     return res.status(400).send({msg:"Transaction is not legit"})
+    
   }
+  else{
     res.json({
     msg:"success",
     orderId:razorpay_order_id,
     paymentId:razorpay_payment_id
   })
 
+  }
+    
   // const mailOptions = {
   //   from: "youremail@gmail.com",
   //   to: "kesavanraj338@gmail.com",
@@ -201,13 +206,16 @@ app.post("/mobile/recharge", (req, res) => {
   const data = req.body;
   console.log(data);
   const transactionId = Math.floor(Math.random() * (980000 - 960000) + 960000);
-  const sqlQuery = `insert into mobilerecharge (circle,operator,mobileNumber,rechargeAmount,tpin,rechargeTime,transactionId) values ('${data.circle}','${data.operator}','${data.mobileNumber}','${data.rechargeAmount}','${data.tpin}',now(),'${transactionId}')`;
+  const sqlQuery = `insert into mobilerecharge (circle,operator,mobileNumber,rechargeAmount,tpin,rechargeTime,transactionId) values ('${data.circle}','${data.operator}','${data.mobileNumber}','${data.amount}','${data.tpin}',now(),'${transactionId}')`;
   connection.query(sqlQuery, (error, results) => {
     if (error) {
       res.status(500).json({ message: "Internal server error" });
       return;
     } else {
-      res.status(200).json(results);
+      res.status(200).json({
+        message:"success",
+        result:results
+      });
     }
 
     
@@ -218,43 +226,65 @@ app.post("/dth/recharge", (req, res) => {
   const data = req.body;
   console.log(data);
   const transactionId = Math.floor(Math.random() * (940000 - 920000) + 920000);
-  const sqlQuery = `insert into dthrecharge (operator,dthNumber,dthAmount,tpin,rechargeTime,transactionId) values ('${data.operator}','${data.dthNumber}','${data.dthAmount}','${data.tpin}',now(),'${transactionId}')`;
+  const sqlQuery = `insert into dthrecharge (operator,dthNumber,dthAmount,tpin,rechargeTime,transactionId) values ('${data.operator}','${data.dthNumber}','${data.amount}','${data.tpin}',now(),'${transactionId}')`;
   connection.query(sqlQuery, (error, results) => {
     if (error) {
       res.status(500).json({ message: "Internal server error" });
       return;
     } else {
-      res.status(200).json(results);
+      res.status(200).json({
+        message:"success"
+      });
 
-      const amount = `${data.rechargeAmount}`;
-      const fixedAmount = (amount * 25.3) / 100;
-      const reducedAmount = (amount - fixedAmount).toFixed(2);
-      console.log(reducedAmount);
+      // const amount = `${data.rechargeAmount}`;
+      // const fixedAmount = (amount * 25.3) / 100;
+      // const reducedAmount = (amount - fixedAmount).toFixed(2);
+      // console.log(reducedAmount);
 
-      client.messages
-        .create({
-          body: `Recharge done on now() MRP:INR ${data.dthAmount}.00.GST 18% payabel by comapny/Distributor/retailer Bal:INR,TransID ${transactionId}.Check your balance,validity,tariff and best recharges on ${data.operator} Thanks App.Would you like to refer  Prepaid to your friends & family and save Rs 100 on your next`,
-          to: `+91'${data.dthNumber}'`, // Text your number
-          from: "+12512205586", // From a valid Twilio number
-        })
-        .then((message) => console.log(message.sid))
-        .catch((err) => console.log(err));
+      // client.messages
+      //   .create({
+      //     body: `Recharge done on now() MRP:INR ${data.dthAmount}.00.GST 18% payabel by comapny/Distributor/retailer Bal:INR,TransID ${transactionId}.Check your balance,validity,tariff and best recharges on ${data.operator} Thanks App.Would you like to refer  Prepaid to your friends & family and save Rs 100 on your next`,
+      //     to: `+91'${data.dthNumber}'`, // Text your number
+      //     from: "+12512205586", // From a valid Twilio number
+      //   })
+      //   .then((message) => console.log(message.sid))
+      //   .catch((err) => console.log(err));
     }
 
-    const mailOptions = {
-      from: "youremail@gmail.com",
-      to: "kesavanraj338@gmail.com",
-      subject: `Recharged`,
-      text: "your request payment successfully recharged",
-    };
+    // const mailOptions = {
+    //   from: "youremail@gmail.com",
+    //   to: "kesavanraj338@gmail.com",
+    //   subject: `Recharged`,
+    //   text: "your request payment successfully recharged",
+    // };
 
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
+    // transporter.sendMail(mailOptions, function (error, info) {
+    //   if (error) {
+    //     console.log(error);
+    //   } else {
+    //     console.log("Email sent: " + info.response);
+    //   }
+    // });
+  });
+});
+
+app.post("/wallet/easebuzzpg", (req, res) => {
+  const data = req.body;
+  console.log(data);
+  const transactionId = Math.floor(Math.random() * (980000 - 960000) + 960000);
+  const sqlQuery = `insert into easebuzzpg (amount,mobileNumber,email,rechargeTime,remarks,transactionId) values ('${data.amount}','${data.mobileNumber}','${data.email}',now(),'${data.remark}','${transactionId}')`;
+  connection.query(sqlQuery, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: "Internal server error" });
+      return;
+    } else {
+      res.status(200).json({
+        message:"success",
+        result:results
+      });
+    }
+
+    
   });
 });
 
@@ -262,12 +292,14 @@ app.post("/loadwallet", (req, res) => {
   const data = req.body;
   console.log(data);
   const transactionId = Math.floor(Math.random() * (10000 - 100) + 100);
-  const sqlQuery = `insert into loadwallet (depositBank,amount,paymentMode,endingDate,refNo,rechargeTime,paySlip,remarks,transactionId) values ('${data.depositBank}','${data.amount}','${data.paymentMode}','${data.endingDate}','${data.refNo}',now(),'${data.paySlip}','${data.remarks}','${transactionId}')`;
+  const sqlQuery = `insert into loadwallet (amount,rechargeTime,remarks,transactionId) values ('${data.amount}',now(),'${data.remarks}','${transactionId}')`;
   connection.query(sqlQuery, (error, results) => {
     if (error) {
       res.status(500).json({ message: "Internal server error" });
     } else {
-      res.status(200).json(results);
+      res.status(200).json({
+        message:"success"
+      });
     }
   });
 });
@@ -305,6 +337,18 @@ app.get("/list/dth/recharge", (req, res) => {
 
 app.get("/list/loadWallet", (req, res) => {
   const sqlQuery = `select * from loadwallet`;
+  connection.query(sqlQuery, (error, results) => {
+    if (error) {
+      res.status(500).json({
+        message: "something went to wrong",
+      });
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+app.get("/list/loadWallet/sum", (req, res) => {
+  const sqlQuery = `select sum(amount) as result from loadwallet`;
   connection.query(sqlQuery, (error, results) => {
     if (error) {
       res.status(500).json({
