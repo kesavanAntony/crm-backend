@@ -41,21 +41,21 @@ app.use(
 );
 
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USERNAME,
-  password: process.env.PASSWORD,
-  database: process.env.DB_DBNAME,
-  port: process.env.DB_PORT,
+  // host: process.env.DB_HOST,
+  // user: process.env.DB_USERNAME,
+  // password: process.env.PASSWORD,
+  // database: process.env.DB_DBNAME,
+  // port: process.env.DB_PORT,
   // host : "localhost",
   // user : "root",
   // password : "root123",
   // database : "razotransutility",
   // port : 3306
-  // host: process.env.DB_HOST,
-  // user: process.env.DB_USERNAME,
-  // password:process.env.PASSWORD,
-  // database:process.env.DB_DBNAME,
-  // port: process.env.DB_PORT,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USERNAME,
+  password:process.env.PASSWORD,
+  database:process.env.DB_DBNAME,
+  port: process.env.DB_PORT,
  
 });
 
@@ -146,6 +146,46 @@ app.post("/order/validate",(req,res)=>{
   })
 
   }
+})
+  
+app.post("/payment/link",(req,res)=>{
+    const data = req.body;
+    console.log(data)
+
+  var instance = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_SECRET })
+
+  const option = instance.paymentLink.create({
+    amount: data.amount * 100,
+    currency: "INR",
+    accept_partial: true,
+    first_min_partial_amount: 100,
+    description: "request to Pay",
+    customer: {
+      name: "Gaurav Kumar",
+      // email: "gaurav.kumar@example.com",
+      contact: `+91${data.mobileNumber}`
+    },
+    notify: {
+      sms: true,
+    },
+    reminder_enable: true,
+    notes: {
+      policy_name: "Razo Payment"
+    },
+    callback_url: "https://example-callback-url.com/",
+    callback_method: "get"
+  })
+
+  if (!option){
+    return res.status(500).send("error")
+  }
+  else{
+    
+    res.status(200).send(option);
+
+  }
+
+})
     
   // const mailOptions = {
   //   from: "youremail@gmail.com",
@@ -176,7 +216,6 @@ app.post("/order/validate",(req,res)=>{
   //   .catch((err) => console.log(err));
 
   
-})
 
 app.post("/login", (req, res) => {
   const data = req.body;
@@ -290,9 +329,11 @@ app.post("/wallet/easebuzzpg", (req, res) => {
 
 app.post("/loadwallet", (req, res) => {
   const data = req.body;
+  const user = "admin";
+  const status = "active";
   console.log(data);
   const transactionId = Math.floor(Math.random() * (10000 - 100) + 100);
-  const sqlQuery = `insert into loadwallet (amount,rechargeTime,remarks,transactionId) values ('${data.amount}',now(),'${data.remarks}','${transactionId}')`;
+  const sqlQuery = `insert into loadwallet (amount,remarks,rechargeTime,transactionId,user,status) values ('${data.amount}','${data.remarks}', now() ,'${transactionId}','${user}','${status}')`;
   connection.query(sqlQuery, (error, results) => {
     if (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -347,6 +388,7 @@ app.get("/list/loadWallet", (req, res) => {
     }
   });
 });
+
 app.get("/list/loadWallet/sum", (req, res) => {
   const sqlQuery = `select sum(amount) as result from loadwallet`;
   connection.query(sqlQuery, (error, results) => {
@@ -366,6 +408,19 @@ app.get("/", (req, res) => {
   } else {
     return res.json({ valid: false });
   }
+});
+
+app.get("/wallet", (req, res) => {
+  const sqlQuery = `select * from walletAmount`;
+  connection.query(sqlQuery, (error, results) => {
+    if (error) {
+      res.status(500).send({
+        message: "something went to wrong",
+      });
+    } else {
+      res.status(200).send(results);
+    }
+  });
 });
 
 const portNumber = 4000;
