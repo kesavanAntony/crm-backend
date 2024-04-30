@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://guileless-pegasus-fa8e34.netlify.app"],
+    origin: ["https://optimistacrm.netlify.app"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
@@ -41,21 +41,21 @@ app.use(
 );
 
 const connection = mysql.createConnection({
-  // host: process.env.DB_HOST,
-  // user: process.env.DB_USERNAME,
-  // password: process.env.PASSWORD,
-  // database: process.env.DB_DBNAME,
-  // port: process.env.DB_PORT,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USERNAME,
+  password: process.env.PASSWORD,
+  database: process.env.DB_DBNAME,
+  port: process.env.DB_PORT,
   // host : "localhost",
   // user : "root",
   // password : "root123",
   // database : "razotransutility",
   // port : 3306
-  host: process.env.DB_HOST,
-  user: process.env.DB_USERNAME,
-  password:process.env.PASSWORD,
-  database:process.env.DB_DBNAME,
-  port: process.env.DB_PORT,
+  // host: process.env.DB_HOST,
+  // user: process.env.DB_USERNAME,
+  // password:process.env.PASSWORD,
+  // database:process.env.DB_DBNAME,
+  // port: process.env.DB_PORT,
  
 });
 
@@ -78,10 +78,10 @@ connection.connect((error) => {
 //  const key_id = process.env.RAZORPAY_KEY_ID;
 // const secret = process.env.RAZORPAY_SECRET
 //  console.log(key_id,secret)
-const accountSid = process.env.accountSid
-const authToken = process.env.authToken
+// const accountSid = process.env.accountSid
+// const authToken = process.env.authToken
 
-const client = twilio(accountSid,authToken);
+// const client = twilio(accountSid,authToken);
 
 app.post("/order", async(req,res )=>{
   try{
