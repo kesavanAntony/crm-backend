@@ -33,7 +33,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: ["https://razo.co.in"],
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST","PUT","DELETE"],
     credentials: true,
     // origin:"*"
@@ -170,7 +170,7 @@ app.post("/payment/link",(req,res)=>{
     },
     reminder_enable: true,
     notes: {
-      policy_name: "Razo Payment"
+      policy_name: "Optimista Payment"
     },
     callback_url: "https://example-callback-url.com/",
     callback_method: "get"
